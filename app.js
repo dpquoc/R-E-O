@@ -36,7 +36,7 @@ app.use(xss());
 
 //routes
 app.use('/api/v1/auth', auth);
-app.use('/api/v1/trainee' ,trainee);
+app.use('/api/v1/trainee' ,authenticateUser , trainee);
 
 
 app.use(notFoundMiddleware);
