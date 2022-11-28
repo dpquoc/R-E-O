@@ -34,9 +34,6 @@ app.use(xss());
 
 
 
-app.get('/', (req, res) => {
-  res.send('<h1>UWC2.0</h1><a href="/api-docs">API Documentation</a>');
-});
 //routes
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/trainee' ,trainee);
