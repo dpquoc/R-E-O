@@ -42,11 +42,11 @@ Trainee.getTrainees = async ({name}) => {
         INNER JOIN Trainee
         ON Person.SSN = Trainee.SSN
         `
-        if ( name.length()=== 1){
+        if ( name.length=== 1){
             searchString = searchString +
             ` WHERE LOWER(Person.Fname) LIKE LOWER('%${name[0]}%') OR LOWER(Person.Lname) LIKE LOWER('%${name[0]}%')`
         }
-        if ( name.length()=== 2){
+        if ( name.length=== 2){
             searchString = searchString +
             ` WHERE (LOWER(Person.Fname) LIKE LOWER('%${name[0]}%') AND LOWER(Person.Lname) LIKE LOWER('%${name[1]}%'))
             OR (LOWER(Person.Fname) LIKE LOWER('%${name[1]}%') AND LOWER(Person.Lname) LIKE LOWER('%${name[0]}%'))`

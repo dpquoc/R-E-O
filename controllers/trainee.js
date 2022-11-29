@@ -14,7 +14,7 @@ const getTrainees = async (req, res) => {
     }
     else{
         name = name.split(' ')
-        if ( name.length() > 2 ){
+        if ( name.length> 2 ){   //
             throw new BadRequestError('Name contains only two fields : First name , Last name')
         }
     }

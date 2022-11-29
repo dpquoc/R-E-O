@@ -1,6 +1,7 @@
 const { StatusCodes } = require('http-status-codes')
 const { BadRequestError, UnauthenticatedError } = require('../errors/index')
 const { attachCookiesToResponse} = require('../utils/jwt')
+const bcrypt = require('bcryptjs');
 
 
 const login = async (req, res) => {
@@ -10,8 +11,9 @@ const login = async (req, res) => {
     throw new BadRequestError('Please provide username and password');
   }
 
-  if ( user != process.env.USERNAME){
-    throw new UnauthenticatedError('Username or Password is wrong');
+  if ( username != process.env.USER){
+    console.log(process.env.USER);
+    throw new UnauthenticatedError('Username or Password is wrong 1');
   }
   const isPasswordCorrect = await bcrypt.compare(password, process.env.PASSWORD);
   if (!isPasswordCorrect) {
