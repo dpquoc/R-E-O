@@ -1,6 +1,5 @@
-const User = require('../models/User')
 const { StatusCodes } = require('http-status-codes')
-const { BadRequestError, UnauthenticatedError } = require('../../errors/index')
+const { BadRequestError, UnauthenticatedError } = require('../errors/index')
 const { attachCookiesToResponse} = require('../utils/jwt')
 
 
@@ -10,7 +9,6 @@ const login = async (req, res) => {
   if (!username || !password) {
     throw new BadRequestError('Please provide username and password');
   }
-  const user = await User.findOne({ username });
 
   if ( user != process.env.USERNAME){
     throw new UnauthenticatedError('Username or Password is wrong');

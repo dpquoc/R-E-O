@@ -6,7 +6,7 @@ const {
   addTrainee,
   getTrainees,
   getSingleTrainee
-} = require('../controllers')
+} = require('../controllers/trainee')
 
 
 router.route('/').post(addTrainee).get(getTrainees)
