@@ -13,11 +13,11 @@ const login = async (req, res) => {
 
   if ( username != process.env.USER){
     console.log(process.env.USER);
-    throw new UnauthenticatedError('Username or Password is wrong 1');
+    throw new UnauthenticatedError('Username is wrong');
   }
   const isPasswordCorrect = await bcrypt.compare(password, process.env.PASSWORD);
   if (!isPasswordCorrect) {
-    throw new UnauthenticatedError('Username or Password is wrong');
+    throw new UnauthenticatedError('Password is wrong');
   }
   
   attachCookiesToResponse({ res, user: {id:12345678 , role:'admin'} });

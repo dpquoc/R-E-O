@@ -1,22 +1,14 @@
--- BEGIN
+BEGIN
 
--- FOR c IN (SELECT table_name FROM user_tables) LOOP
--- EXECUTE IMMEDIATE ('DROP TABLE "' || c.table_name || '" CASCADE CONSTRAINTS');
--- END LOOP;
+FOR c IN (SELECT table_name FROM user_tables) LOOP
+EXECUTE IMMEDIATE ('DROP TABLE "' || c.table_name || '" CASCADE CONSTRAINTS');
+END LOOP;
 
--- FOR s IN (SELECT sequence_name FROM user_sequences) LOOP
--- EXECUTE IMMEDIATE ('DROP SEQUENCE ' || s.sequence_name);
--- END LOOP;
+FOR s IN (SELECT sequence_name FROM user_sequences) LOOP
+EXECUTE IMMEDIATE ('DROP SEQUENCE ' || s.sequence_name);
+END LOOP;
 
--- FOR f IN (SELECT function_name FROM user_functions) LOOP
--- EXECUTE IMMEDIATE ('DROP FUNCTION ' || f.function_name);
--- END LOOP;
-
--- FOR f IN (SELECT type_name FROM user_types) LOOP
--- EXECUTE IMMEDIATE ('DROP type ' || f.type_name);
--- END LOOP;
-
--- END;
+END;
 
 ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
 ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'DD/MM/YYYY HH24:MI';
@@ -24,7 +16,7 @@ CREATE TABLE    Company
 (   
     cnumber        CHAR(4)  PRIMARY KEY,
     cname          VARCHAR(30) NOT NULL,
-    phone          DECIMAL(11) UNIQUE NOT NULL,
+    phone          VARCHAR(11) UNIQUE NOT NULL,
     edate          DATE,
     address        VARCHAR(30),
     CONSTRAINT     fm_com_cnumber          CHECK (REGEXP_LIKE (cnumber, 'C\d{3}')),
@@ -36,7 +28,7 @@ CREATE TABLE    Person
     ssn            VARCHAR(12) PRIMARY KEY,
     fname          VARCHAR(30),
     lname          VARCHAR(30),
-    phone          DECIMAL(11) UNIQUE NOT NULL,
+    phone          VARCHAR(11) UNIQUE NOT NULL,
     address        VARCHAR(30),
     CONSTRAINT     fm_per_phone            CHECK (REGEXP_LIKE(phone, '84\d{9}')),
     CONSTRAINT     fm_per_ssn              CHECK (REGEXP_LIKE(ssn, '\d{12}'))
@@ -547,7 +539,7 @@ CREATE OR REPLACE TYPE t_record as object(
 CREATE OR REPLACE TYPE t_table as table of t_record;
 /
 --Function2 retrive the result of a trainee in a season-------------------------
-CREATE OR REPLACE FUNCTION sum_vote(y IN NUMBER, SSN IN NUMBER)
+CREATE OR REPLACE FUNCTION sum_vote(y IN NUMBER, SSN IN VARCHAR2)
 RETURN t_table as v_ret t_table;
                   come_ep int;
 BEGIN
@@ -564,7 +556,7 @@ BEGIN
     
     SELECT count(*) INTO come_ep
     FROM stageincludetrainee
-    WHERE y=syear and ssn = ssn_trainee;
+    WHERE y=syear and SSN = ssn_trainee;
     
     IF COME_EP =1 THEN 
         FOR k in 2..5 LOOP
@@ -615,13 +607,13 @@ BEGIN
             GROUP BY SSN_TRAINEE
         )
         ;
-        
         END LOOP;
     END IF;
     RETURN v_ret;   
 END sum_vote;
---select * from table(sum_vote(2021,'164287459396'))
 /
+--select * from table(sum_vote(2021,'164287459396'));
+--/
 
 
 
@@ -1188,7 +1180,7 @@ END;
 /
 --test--
 -- insert into Episode             values (2020, 5, 'CHUNG KET', '5/10/2021 19:00', 90);
--- insert into stage               values (2020, 5, 1, 'y', 2, 0, 'S5');               --SKILL 2,5 MOI NH�U, C�N L?I 4
+-- insert into stage               values (2020, 5, 1, 'y', 2, 0, 'S5');               --SKILL 2,5 MOI NH?U, C?N L?I 4
 -- insert into stage               values (2020, 5, 2, 'n', 2, 0, 'S5');
 -- insert into stage               values (2020, 5, 3, 'n', 2, 0, 'S5');
 -- insert into stage               values (2020, 5, 4, 'y', 2, 0, 'S5');

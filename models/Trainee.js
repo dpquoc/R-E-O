@@ -3,21 +3,21 @@ const oracledb = require('oracledb');
 let Trainee = {};
 let connection;
 
-Trainee.addTrainee = async ({ SSN, Fname, Lname, address, phone ,   DoB, photo, company_ID }) => {
+Trainee.addTrainee = async ({ SSN, Fname, Lname, address, phone , DoB, photo, company_ID }) => {
     try {
         connection = await oracledb.getConnection();
-
+        const a=await connection.execute(`ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY'`);
         const person = await connection.execute(
-            `INSERT INTO Person (SSN, Fname, Lname, address, phone) VALUES
-            (:SSN, :Fname, :Lname, :address, :phone)`,
-            [SSN , Fname , Lname , address , phone]
+            `INSERT INTO Person VALUES
+            (:SSN, :Fname, :Lname, :phone, :address)`,
+            [SSN , Fname , Lname , phone, address]
         );
         const trainee = await connection.execute(
-            `INSERT INTO Trainee (SSN, DoB, photo, company_ID) VALUES
+            `INSERT INTO Trainee VALUES
             (:SSN, :DoB, :photo, :company_ID)`,
             [SSN , DoB , photo , company_ID]
         );
-        const res = {person:person.rows , trainee:trainee.rows}
+        const res = {person:person.rows , trainee:trainee.rows};
         return res;
     } catch (error) {
         throw error
@@ -70,21 +70,25 @@ Trainee.getTrainees = async ({name}) => {
 
 Trainee.getSingleTrainee = async (id) => {
     try {
+        //console.log(id);
         connection = await oracledb.getConnection();
-
         const trainee = await connection.execute(`SELECT * FROM TRAINEE WHERE SSN = ${id}`);
+        //console.log(trainee.rows);
+        //console.log("SELECT * FROM TRAINEE WHERE SSN = ${id}");
         if (trainee.rowsAffected == 0){
             return {msg:`No trainee with this id : ${id}`}
         }
-        const person = await connection.execute(`SELECT year FROM PERSON WHERE SSN = ${id}`);
-        const seasonTrainee = await connection.execute(`SELECT * FROM SeasonTrainee WHERE SSN = ${id} ORDER BY year ASC`);
-        seasonTrainee.rows.map( async row =>{
-            //
-            //IMPORTANT function_2 not known real name yet
-            //
-            let achievement = await connection.execute(`SELECT * FROM TABLE( function_2(${id} ,${row.year}) )`)
-            row = {...row ,achievement: achievement.rows}
-        } )
+        const person = await connection.execute(`SELECT * FROM PERSON WHERE SSN = ${id}`);
+        //console.log(person.rows);
+        const seasonTrainee = await connection.execute(`SELECT * FROM SeasonTrainee WHERE SSN_TRAINEE = ${id} ORDER BY syear ASC`); //
+        //console.log(seasonTrainee.rows);
+        // seasonTrainee.rows.map( async (row)=>{
+        //     console.log(row);
+        //     let achievement = await connection.execute(`SELECT * FROM TABLE( SUM_VOTE(${row.SYEAR}, ${id}) )`)
+        //     console.log(achievement.rows);
+        //     console.log ({...row ,achievement: achievement.rows}) ;
+            
+        // })
         return {person: person.rows , trainee: trainee.rows , seasonTrainee: seasonTrainee.rows}
     } catch (error) {
         throw error
@@ -99,5 +103,26 @@ Trainee.getSingleTrainee = async (id) => {
         }
     }
 };
-
+Trainee.getAchievement=async (id, {year}) =>{
+    try {
+        connection = await oracledb.getConnection();
+        let achievement = await connection.execute(`SELECT * FROM TABLE( SUM_VOTE(${year}, ${id}) )`)
+       
+        if(achievement.rows.length===0){
+            return {msg:"Trainee doesn't join this year"}
+        }
+        return achievement.rows;
+    } catch (error) {
+        throw error
+    }
+    finally{
+        if (connection) {
+            try {
+                await connection.close();  // always release the connection back to the pool
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+}
 module.exports = Trainee;

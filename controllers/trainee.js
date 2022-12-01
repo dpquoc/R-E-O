@@ -3,9 +3,9 @@ const { StatusCodes } = require('http-status-codes')
 const { BadRequestError } = require('../errors')
 
 const addTrainee  = async (req, res) => {
-    const { SSN, Fname, Lname, address, phone ,   DoB, photo, company_ID } = req.body
+    const { SSN, Fname, Lname, address, phone , DoB, photo, company_ID } = req.body
     const trainee = await Trainee.addTrainee({ SSN, Fname, Lname, address, phone ,   DoB, photo, company_ID } )
-    res.status(StatusCodes.CREATED).json({ msg:'Trainee was successfully added' , traineeInfo: trainee })
+    res.status(StatusCodes.CREATED).json({ msg:'Trainee was successfully added' , traineeInfo:{ SSN, Fname, Lname, address, phone , DoB, photo, company_ID }})
 }
 const getTrainees = async (req, res) => {
     let {name} = req.query
@@ -24,13 +24,20 @@ const getTrainees = async (req, res) => {
 }
 
 const getSingleTrainee = async (req, res) => {
-    const SSN = req.params
-    const allInfoTrainee = await Trainee.getSingleTrainee(SSN)
+    const {traineeID} = req.params
+    const allInfoTrainee = await Trainee.getSingleTrainee(traineeID)
     res.status(StatusCodes.OK).json(allInfoTrainee)
+}
+const getAchievement = async (req, res) => {
+    const {traineeID}= req.params
+    let {year} =req.query
+    const achievementOfTrainee = await Trainee.getAchievement(traineeID, {year})
+    res.status(StatusCodes.OK).json(achievementOfTrainee)
 }
 
 module.exports = {
   addTrainee,
   getTrainees,
-  getSingleTrainee
+  getSingleTrainee,
+  getAchievement
 }
