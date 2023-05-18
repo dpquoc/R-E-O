@@ -23,9 +23,9 @@ Before running the Music Show Management System, ensure you have the following p
 ## Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/dpquoc/R-E-O.git
-
+```
+git clone https://github.com/dpquoc/R-E-O.git
+```
 2. Navigate to the project directory:
 3. Install dependencies:
 ```
